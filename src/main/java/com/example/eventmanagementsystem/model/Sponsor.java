@@ -36,10 +36,11 @@ public class Sponsor {
     public Sponsor() {
     }
 
-    public Sponsor(int id, String name, String industry) {
+    public Sponsor(int id, String name, String industry, List<Event> events) {
         this.id = id;
         this.name = name;
         this.industry = industry;
+        this.events = events;
     }
 
     public int getId() {
@@ -73,6 +74,6 @@ public class Sponsor {
     public void setEvents(List<Event> events) {
         this.events = events;
     }
-    
+
     
 }

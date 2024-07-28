@@ -41,10 +41,11 @@ public class Event {
     public Event() {
     }
 
-    public Event(int id, String name, String date) {
+    public Event(int id, String name, String date, List<Sponsor> sponsors) {
         this.id = id;
         this.name = name;
         this.date = date;
+        this.sponsors = sponsors;
     }
 
     public int getId() {

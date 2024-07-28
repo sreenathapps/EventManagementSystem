@@ -15,6 +15,8 @@ package com.example.eventmanagementsystem.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.eventmanagementsystem.model.Event;
 import com.example.eventmanagementsystem.model.Sponsor;
 import com.example.eventmanagementsystem.repository.SponsorRepository;
@@ -22,6 +24,7 @@ import com.example.eventmanagementsystem.repository.SponsorRepository;
 /**
  * SponsorJpaService
  */
+@Service
 public class SponsorJpaService implements SponsorRepository {
 
     @Override
