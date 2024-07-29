@@ -67,8 +67,12 @@ public class EventJpaService implements EventRepository {
 
     @Override
     public Event getEventById(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEventById'");
+        try {
+            Event event = eventJpaRepository.findById(id).get();
+            return event;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override

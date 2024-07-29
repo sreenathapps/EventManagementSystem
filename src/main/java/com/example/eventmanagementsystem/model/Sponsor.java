@@ -16,6 +16,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Sponsor
  */
@@ -31,6 +33,7 @@ public class Sponsor {
     @Column(name = "industry")
     private String industry;
     @ManyToMany(mappedBy = "sponsors")
+    @JsonIgnoreProperties("sponsors")
     private List<Event> events = new ArrayList<>();
 
     public Sponsor() {
@@ -75,5 +78,5 @@ public class Sponsor {
         this.events = events;
     }
 
-    
+
 }

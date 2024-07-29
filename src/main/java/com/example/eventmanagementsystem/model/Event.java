@@ -16,6 +16,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Event
  */
@@ -35,7 +37,8 @@ public class Event {
         name = "event_sponsor",
         joinColumns = @JoinColumn(name = "eventid"),
         inverseJoinColumns = @JoinColumn(name = "sponsorid")
-    ) 
+    )
+    @JsonIgnoreProperties("events")
     private List<Sponsor> sponsors = new ArrayList<>();
 
     public Event() {
