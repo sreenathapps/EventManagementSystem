@@ -59,7 +59,7 @@ public class EventController {
     }
 
     @DeleteMapping("/events/{eventId}")
-    public void deleteEvent(int eventId) {
+    public void deleteEvent(@PathVariable("eventId") int eventId) {
         eventJpaService.deleteEvent(eventId);
         throw new ResponseStatusException(HttpStatus.NO_CONTENT);
     }
