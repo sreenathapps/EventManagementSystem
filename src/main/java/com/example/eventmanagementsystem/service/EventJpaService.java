@@ -77,20 +77,56 @@ public class EventJpaService implements EventRepository {
 
     @Override
     public Event updateEvent(int id, Event event) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateEvent'");
+        try {
+            Event newEvent = eventJpaRepository.findById(id).get();
+            if (event.getName() != null) {
+                newEvent.setName(event.getName());
+            }
+            if (event.getDate() != null) {
+                newEvent.setDate(event.getDate());
+            }
+            if (event.getSponsors() != null) {
+                List<Integer> sponsorIds = new ArrayList<>();
+                for (Sponsor sponsor : event.getSponsors()) {
+                    sponsorIds.add(sponsor.getId());
+                }
+                List<Sponsor> completeSponsors = sponsorJpaRepository.findAllById(sponsorIds);
+                if (completeSponsors.size() != sponsorIds.size()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some sponsors are not found");
+                }
+                newEvent.setSponsors(completeSponsors);
+            }
+            eventJpaRepository.save(newEvent);
+            return newEvent;
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
     public void deleteEvent(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteEvent'");
+        try {
+            Event event = eventJpaRepository.findById(id).get();
+            List<Sponsor> sponsors = event.getSponsors();
+            for (Sponsor sponsor : sponsors) {
+                sponsor.getEvents().remove(event);
+            }
+            sponsorJpaRepository.saveAll(sponsors);
+
+            eventJpaRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
     public List<Sponsor> getEventSponsors(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEventSponsor'");
+        try {
+            Event event = eventJpaRepository.findById(id).get();
+            return event.getSponsors();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
