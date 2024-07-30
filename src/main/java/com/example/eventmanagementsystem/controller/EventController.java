@@ -64,7 +64,7 @@ public class EventController {
         throw new ResponseStatusException(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/event/{eventId}/sponsors")
+    @GetMapping("/events/{eventId}/sponsors")
     public List<Sponsor> getEventSponsors(@PathVariable("eventId") int eventId) {
         return eventJpaService.getEventSponsors(eventId);
     }
