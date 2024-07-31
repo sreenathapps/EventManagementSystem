@@ -47,25 +47,28 @@ public class SponsorJpaService implements SponsorRepository {
     public Sponsor getSponsorById(int id) {
         try {
             return sponsorJpaRepository.findById(id).get();
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
     public Sponsor addSponsor(Sponsor sponsor) {
+        sponsor.setSponsorId(0);
+        List<Integer> eventIds = new ArrayList<>();
+        for(Event event : sponsor.getEvents()) {
+            eventIds.add(event.getEventId());
+        }
         try {
-            List<Event> events = sponsor.getEvents();
-            List<Integer> eventIds = new ArrayList<>();
-            for (Event event : events)
-                eventIds.add(event.getEventId());
             List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);
-            if (eventIds.size() != events.size())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some of Events are not found");
+
+            if (eventIds.size() != completeEvents.size()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Some events are not found");
+            }
             sponsor.setEvents(completeEvents);
             sponsorJpaRepository.save(sponsor);
             return sponsor;
-        } catch (NoSuchElementException e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
