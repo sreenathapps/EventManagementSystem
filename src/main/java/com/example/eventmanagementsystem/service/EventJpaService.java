@@ -50,7 +50,7 @@ public class EventJpaService implements EventRepository {
         try {
             List<Integer> sponsorIds = new ArrayList<>();
             for (Sponsor sponsor : event.getSponsors()) {
-                sponsorIds.add(sponsor.getId());
+                sponsorIds.add(sponsor.getSponsorId());
             }
             List<Sponsor> completeSponsors = sponsorJpaRepository.findAllById(sponsorIds);
             if (sponsorIds.size() != completeSponsors.size()) {
@@ -79,8 +79,8 @@ public class EventJpaService implements EventRepository {
     public Event updateEvent(int id, Event event) {
         try {
             Event newEvent = eventJpaRepository.findById(id).get();
-            if (event.getName() != null) {
-                newEvent.setName(event.getName());
+            if (event.getEventName() != null) {
+                newEvent.setEventName(event.getEventName());
             }
             if (event.getDate() != null) {
                 newEvent.setDate(event.getDate());
@@ -88,7 +88,7 @@ public class EventJpaService implements EventRepository {
             if (event.getSponsors() != null) {
                 List<Integer> sponsorIds = new ArrayList<>();
                 for (Sponsor sponsor : event.getSponsors()) {
-                    sponsorIds.add(sponsor.getId());
+                    sponsorIds.add(sponsor.getSponsorId());
                 }
                 List<Sponsor> completeSponsors = sponsorJpaRepository.findAllById(sponsorIds);
                 if (completeSponsors.size() != sponsorIds.size()) {

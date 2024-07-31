@@ -26,10 +26,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Sponsor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "sponsorid")
+    private int sponsorId;
+    @Column(name = "sponsorname")
+    private String sponsorName;
     @Column(name = "industry")
     private String industry;
     @ManyToMany(mappedBy = "sponsors")
@@ -39,27 +39,27 @@ public class Sponsor {
     public Sponsor() {
     }
 
-    public Sponsor(int id, String name, String industry, List<Event> events) {
-        this.id = id;
-        this.name = name;
+    public Sponsor(int sponsorId, String sponsorName, String industry, List<Event> events) {
+        this.sponsorId = sponsorId;
+        this.sponsorName = sponsorName;
         this.industry = industry;
         this.events = events;
     }
 
-    public int getId() {
-        return id;
+    public int getSponsorId() {
+        return sponsorId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setSponsorId(int sponsorId) {
+        this.sponsorId = sponsorId;
     }
 
-    public String getName() {
-        return name;
+    public String getSponsorName() {
+        return sponsorName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSponsorName(String sponsorName) {
+        this.sponsorName = sponsorName;
     }
 
     public String getIndustry() {
@@ -77,6 +77,5 @@ public class Sponsor {
     public void setEvents(List<Event> events) {
         this.events = events;
     }
-
 
 }

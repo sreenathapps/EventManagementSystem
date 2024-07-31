@@ -26,45 +26,41 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "eventid")
+    private int eventId;
+    @Column(name = "eventname")
+    private String eventName;
     @Column(name = "date")
     private String date;
     @ManyToMany
-    @JoinTable(
-        name = "event_sponsor",
-        joinColumns = @JoinColumn(name = "eventid"),
-        inverseJoinColumns = @JoinColumn(name = "sponsorid")
-    )
+    @JoinTable(name = "event_sponsor", joinColumns = @JoinColumn(name = "eventid"), inverseJoinColumns = @JoinColumn(name = "sponsorid"))
     @JsonIgnoreProperties("events")
     private List<Sponsor> sponsors = new ArrayList<>();
 
     public Event() {
     }
 
-    public Event(int id, String name, String date, List<Sponsor> sponsors) {
-        this.id = id;
-        this.name = name;
+    public Event(int eventId, String eventName, String date, List<Sponsor> sponsors) {
+        this.eventId = eventId;
+        this.eventName = eventName;
         this.date = date;
         this.sponsors = sponsors;
     }
 
-    public int getId() {
-        return id;
+    public int getEventId() {
+        return eventId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 
-    public String getName() {
-        return name;
+    public String getEventName() {
+        return eventName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     public String getDate() {
