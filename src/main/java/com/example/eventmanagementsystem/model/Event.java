@@ -26,9 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "eventid")
+    @Column(name = "id")
     private int eventId;
-    @Column(name = "eventname")
+    @Column(name = "name")
     private String eventName;
     @Column(name = "date")
     private String date;
