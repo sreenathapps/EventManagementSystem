@@ -1,0 +1,78 @@
+[1mdiff --git a/src/main/eventmanagementsystem.mv.db b/src/main/eventmanagementsystem.mv.db[m
+[1mindex 435873d..561260d 100644[m
+Binary files a/src/main/eventmanagementsystem.mv.db and b/src/main/eventmanagementsystem.mv.db differ
+[1mdiff --git a/src/main/java/com/example/eventmanagementsystem/service/SponsorJpaService.java b/src/main/java/com/example/eventmanagementsystem/service/SponsorJpaService.java[m
+[1mindex 2371dd3..9853592 100644[m
+[1m--- a/src/main/java/com/example/eventmanagementsystem/service/SponsorJpaService.java[m
+[1m+++ b/src/main/java/com/example/eventmanagementsystem/service/SponsorJpaService.java[m
+[36m@@ -54,20 +54,20 @@[m [mpublic class SponsorJpaService implements SponsorRepository {[m
+ [m
+     @Override[m
+     public Sponsor addSponsor(Sponsor sponsor) {[m
+[31m-        sponsor.setSponsorId(0);[m
+[31m-        List<Integer> eventIds = new ArrayList<>();[m
+[31m-        for(Event event : sponsor.getEvents()) {[m
+[31m-            eventIds.add(event.getEventId());[m
+[31m-        }[m
+         try {[m
+[31m-            List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);[m
+[31m-[m
+[31m-            if (eventIds.size() != completeEvents.size()) {[m
+[31m-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Some events are not found");[m
+[32m+[m[41m            [m
+[32m+[m[32m            List<Integer> eventIds = new ArrayList<>();[m
+[32m+[m[32m            for(Event event: sponsor.getEvents()) eventIds.add(event.getEventId());[m
+[32m+[m[32m            List<Event> events = eventJpaRepository.findAllById(eventIds);[m
+[32m+[m[32m            if (events.size() != eventIds.size()) {[m
+[32m+[m[32m                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);[m
+[32m+[m[32m            }[m
+[32m+[m[32m            for (Event event : events) {[m
+[32m+[m[32m                event.getSponsors().add(sponsor);[m
+             }[m
+[31m-            sponsor.setEvents(completeEvents);[m
+[31m-            sponsorJpaRepository.save(sponsor);[m
+[31m-            return sponsor;[m
+[32m+[m[32m            eventJpaRepository.saveAll(events);[m
+[32m+[m
+[32m+[m[32m            return sponsorJpaRepository.save(sponsor);[m
+         } catch (Exception e) {[m
+             throw new ResponseStatusException(HttpStatus.NOT_FOUND);[m
+         }[m
+[1mdiff --git a/src/main/resources/data.sql b/src/main/resources/data.sql[m
+[1mindex 2f241b7..7466694 100644[m
+[1m--- a/src/main/resources/data.sql[m
+[1m+++ b/src/main/resources/data.sql[m
+[36m@@ -1,16 +1,22 @@[m
+[31m-INSERT INTO Sponsor (id, name, industry) VALUES[m
+[31m-  (1, 'TechCorp', 'Technology'),[m
+[31m-  (2, 'Glamour Inc.', 'Fashion'),[m
+[31m-  (3, 'SoundWave Productions', 'Music Production'),[m
+[31m-  (4, 'EcoPlanet', 'Environmental Conservation');[m
+[32m+[m[32mINSERT INTO[m
+[32m+[m[32m  Sponsor (name, industry)[m
+[32m+[m[32mVALUES[m
+[32m+[m[32m  ('TechCorp', 'Technology'),[m
+[32m+[m[32m  ('Glamour Inc.', 'Fashion'),[m
+[32m+[m[32m  ('SoundWave Productions', 'Music Production'),[m
+[32m+[m[32m  ('EcoPlanet', 'Environmental Conservation');[m
+ [m
+[31m-INSERT INTO Event (id, name, date) VALUES[m
+[31m-  (1, 'TechCon', '2023-12-15'),[m
+[31m-  (2, 'Fashion Fest', '2023-11-05'),[m
+[31m-  (3, 'MusicFest', '2024-01-25'),[m
+[31m-  (4, 'EcoAwareness Conclave', '2023-11-10');[m
+[32m+[m[32mINSERT INTO[m
+[32m+[m[32m  Event (name, date)[m
+[32m+[m[32mVALUES[m
+[32m+[m[32m  ('TechCon', '2023-12-15'),[m
+[32m+[m[32m  ('Fashion Fest', '2023-11-05'),[m
+[32m+[m[32m  ('MusicFest', '2024-01-25'),[m
+[32m+[m[32m  ('EcoAwareness Conclave', '2023-11-10');[m
+ [m
+[31m-INSERT INTO Event_Sponsor (eventId, sponsorId) VALUES[m
+[32m+[m[32mINSERT INTO[m
+[32m+[m[32m  Event_Sponsor (eventId, sponsorId)[m
+[32m+[m[32mVALUES[m
+   (1, 1),[m
+   (1, 2),[m
+   (2, 2),[m
