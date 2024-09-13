@@ -56,22 +56,25 @@ public class SponsorJpaService implements SponsorRepository {
     public Sponsor addSponsor(Sponsor sponsor) {
         try {
             List<Integer> eventIds = new ArrayList<>();
-            for(Event event: sponsor.getEvents()) eventIds.add(event.getEventId());
+            for(Event eve: sponsor.getEvents()) {
+                eventIds.add(eve.getEventId());
+            }
+            sponsor.setEvents(null);
+            sponsorJpaRepository.save(sponsor);
 
-            List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);
-            if (completeEvents.size() != eventIds.size()) {
+            List<Event> completeEves = eventJpaRepository.findAllById(eventIds);
+            if (eventIds.size() != completeEves.size()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
-
-            sponsor.setEvents(completeEvents);
-
-            for (Event event : completeEvents) {
-                List<Sponsor> sponsorList = event.getSponsors();
-                sponsorList.add(sponsor);
+            for (Event eve : completeEves) {
+                eve.getSponsors().add(sponsor);
             }
+            eventJpaRepository.saveAll(completeEves);
 
+            sponsor.setEvents(completeEves);
 
             return sponsorJpaRepository.save(sponsor);
+
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -104,15 +107,19 @@ public class SponsorJpaService implements SponsorRepository {
                 newSponsor.setIndustry(sponsor.getIndustry());
             }
             if (sponsor.getEvents() != null) {
-                List<Integer> eventIds = new ArrayList<>();
-                List<Event> events = sponsor.getEvents();
-                for (Event event : events) {
-                    eventIds.add(event.getEventId());
-                }
-                List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);
-                if (eventIds.size() != completeEvents.size())
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some events are not found");
-                newSponsor.setEvents(completeEvents);
+               List<Integer> eventIds = new ArrayList<>();
+               for(Event event : sponsor.getEvents()) {
+                   eventIds.add(event.getEventId());
+               }
+               List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);
+               if (eventIds.size() != completeEvents.size()) {
+                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some of events are not found");
+               }
+               for(Event event : completeEvents) {
+                   event.getSponsors().add(newSponsor);
+               }
+               eventJpaRepository.saveAll(completeEvents);
+               newSponsor.setEvents(completeEvents);
             }
 
             sponsorJpaRepository.save(newSponsor);
