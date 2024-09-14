@@ -59,21 +59,24 @@ public class SponsorJpaService implements SponsorRepository {
             for(Event eve: sponsor.getEvents()) {
                 eventIds.add(eve.getEventId());
             }
-            sponsor.setEvents(null);
-            sponsorJpaRepository.save(sponsor);
-
+            //Retrieve the event Entities from teh database
             List<Event> completeEves = eventJpaRepository.findAllById(eventIds);
+
             if (eventIds.size() != completeEves.size()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
-            for (Event eve : completeEves) {
-                eve.getSponsors().add(sponsor);
-            }
-            eventJpaRepository.saveAll(completeEves);
-
+            //Map the events to the sponsor
             sponsor.setEvents(completeEves);
 
-            return sponsorJpaRepository.save(sponsor);
+            for(Event eve: completeEves) {
+                eve.getSponsors().add(sponsor);
+            }
+
+            Sponsor savedSponsor =  sponsorJpaRepository.save(sponsor);
+
+            eventJpaRepository.saveAll(completeEves);
+
+            return savedSponsor;
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -100,30 +103,47 @@ public class SponsorJpaService implements SponsorRepository {
     public Sponsor updateSponsor(int id, Sponsor sponsor) {
         try {
             Sponsor newSponsor = sponsorJpaRepository.findById(id).get();
+
+            //update all other fields of the sponsor entity
             if (sponsor.getSponsorName() != null) {
                 newSponsor.setSponsorName(sponsor.getSponsorName());
             }
             if (sponsor.getIndustry() != null) {
                 newSponsor.setIndustry(sponsor.getIndustry());
             }
+            //update events along with the association
             if (sponsor.getEvents() != null) {
-               List<Integer> eventIds = new ArrayList<>();
-               for(Event event : sponsor.getEvents()) {
-                   eventIds.add(event.getEventId());
-               }
-               List<Event> completeEvents = eventJpaRepository.findAllById(eventIds);
-               if (eventIds.size() != completeEvents.size()) {
-                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some of events are not found");
-               }
-               for(Event event : completeEvents) {
-                   event.getSponsors().add(newSponsor);
-               }
-               eventJpaRepository.saveAll(completeEvents);
-               newSponsor.setEvents(completeEvents);
+                //Clear all the existing associations of sponsor
+                List<Event> events = newSponsor.getEvents();
+                for(Event event : events) {
+                    event.getSponsors().remove(newSponsor);
+                }
+                eventJpaRepository.saveAll(events);
+
+                //Extract event Ids of new Events
+                List<Integer> newEventIds = new ArrayList<>();
+                for(Event event: sponsor.getEvents()) {
+                    newEventIds.add(event.getEventId());
+                }
+
+                //Fetch all the Events from database
+                List<Event> newEvents = eventJpaRepository.findAllById(newEventIds);
+
+                if (newEventIds.size() != newEvents.size()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
+
+                //Add teh new associations of the event
+                for(Event event: newEvents) {
+                    event.getSponsors().add(newSponsor);
+                }
+                eventJpaRepository.saveAll(newEvents);
+
+                //map the new Events to the sponsor
+                newSponsor.setEvents(newEvents);
             }
 
-            sponsorJpaRepository.save(newSponsor);
-            return newSponsor;
+            return sponsorJpaRepository.save(newSponsor);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
