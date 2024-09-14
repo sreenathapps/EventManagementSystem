@@ -78,7 +78,7 @@ public class SponsorJpaService implements SponsorRepository {
 
             return savedSponsor;
 
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
